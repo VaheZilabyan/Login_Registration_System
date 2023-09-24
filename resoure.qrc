@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/image">
+        <file>img/add-user.png</file>
+        <file>img/id-card.png</file>
+        <file>img/invisible.png</file>
+        <file>img/logout.png</file>
+        <file>img/mail.png</file>
+        <file>img/phone-call.png</file>
+        <file>img/user.png</file>
+        <file>img/user-interface.png</file>
+        <file>img/visible.png</file>
+    </qresource>
+    <qresource prefix="/new/prefix1"/>
+</RCC>
