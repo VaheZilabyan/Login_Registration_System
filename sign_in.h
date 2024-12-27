@@ -3,6 +3,9 @@
 
 #include <dbmanager.h>
 #include <QWidget>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QLayout>
 
 namespace Ui {
 class Sign_in;
@@ -18,16 +21,22 @@ public:
 
 private slots:
     void on_login_clicked();
-
     void on_back_from_sign_in_clicked();
-    void on_pushButton_clicked();
+    void on_sign_up_clicked();
 
 signals:
     void signal_back();
     void signal_sign_up();
+
 private:
-    Ui::Sign_in *ui;
     DBManager dbm;
+
+private: //gui
+    QLineEdit *lineEdit_login;
+    QLineEdit *lineEdit_password;
+    QPushButton *back_from_sign_in;
+    QPushButton *login;
+    QPushButton *sign_up;
 };
 
 #endif // SIGN_IN_H

@@ -3,6 +3,9 @@
 
 #include "dbmanager.h"
 #include <QWidget>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QLayout>
 
 namespace Ui {
 class Sign_up;
@@ -24,8 +27,17 @@ signals:
     void signal_back();
 
 private:
-    Ui::Sign_up *ui;
     DBManager dbm;
+
+private: //gui
+    QPushButton *create_button;
+    QPushButton *back_button;
+    QLineEdit *name;
+    QLineEdit *surname;
+    QLineEdit *phone;
+    QLineEdit *mail;
+    QLineEdit *login;
+    QLineEdit *password;
 };
 
 #endif // SIGN_UP_H

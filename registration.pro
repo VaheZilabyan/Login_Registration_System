@@ -23,15 +23,10 @@ HEADERS += \
     sign_in.h \
     sign_up.h
 
-FORMS += \
-    mainwindow.ui \
-    sign_in.ui \
-    sign_up.ui
-
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-RESOURCES += \
-    resoure.qrc
+#RESOURCES += \
+#    resoure.qrc

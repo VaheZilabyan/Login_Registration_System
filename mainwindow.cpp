@@ -1,51 +1,74 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-
+#include <QPushButton>
 #include <QMessageBox>
 #include <Qfile>
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
+    this->setWindowTitle("Registration");
     this->resize(width, height);
     this->setMaximumHeight(this->size().height());
     this->setMaximumWidth(this->size().width() + 300);
-    sign_in = new Sign_in;
-    sign_up = new Sign_up;
-    this->setWindowTitle("Registration");
-    ui->stackedWidget->setCurrentIndex(0);
-    ui->stackedWidget->insertWidget(1, sign_in);
-    ui->stackedWidget->insertWidget(2, sign_up);
 
-    connect(sign_in, &Sign_in::signal_back, this, &MainWindow::back);
-    connect(sign_up, &Sign_up::signal_back, this, &MainWindow::back);
-    connect(sign_in, &Sign_in::signal_sign_up, this, &MainWindow::on_sing_up_clicked);
+    sign_in_window = new Sign_in;
+    sign_up_window = new Sign_up;
+    stackedWidget = new QStackedWidget(this);
+    QWidget *mainWidget = new QWidget(this);
+    QVBoxLayout *main_layout = new QVBoxLayout();
+
+    QLabel *myChatApp_label = new QLabel("WELCOME", mainWidget);
+    QFont font = myChatApp_label->font();
+    font.setBold(true);
+    font.setPointSize(26);
+    myChatApp_label->setFont(font);
+    myChatApp_label->setAlignment(Qt::AlignCenter);
+
+    sign_in_button = new QPushButton("Sign in", mainWidget);
+    sign_up_button = new QPushButton("Sign up", mainWidget);
+    exit_button = new QPushButton("Exit", mainWidget);
+
+    main_layout->addWidget(myChatApp_label);
+    main_layout->addWidget(sign_in_button);
+    main_layout->addWidget(sign_up_button);
+    main_layout->addWidget(exit_button);
+    mainWidget->setLayout(main_layout);
+
+    stackedWidget->insertWidget(0, mainWidget);
+    stackedWidget->insertWidget(1, sign_in_window);
+    stackedWidget->insertWidget(2, sign_up_window);
+    stackedWidget->setCurrentIndex(0);
+
+
+    setCentralWidget(stackedWidget);
+
+    connect(sign_in_button, &QPushButton::clicked, this, &MainWindow::on_sign_in_clicked);
+    connect(sign_up_button, &QPushButton::clicked, this, &MainWindow::on_sign_up_clicked);
+    connect(exit_button, &QPushButton::clicked, this, &MainWindow::on_exit_clicked);
+
+    connect(sign_in_window, &Sign_in::signal_back, this, &MainWindow::slot_back);
+    connect(sign_in_window, &Sign_in::signal_sign_up, this, &MainWindow::on_sign_up_clicked);
+    connect(sign_up_window, &Sign_up::signal_back, this, &MainWindow::slot_back);
 }
 
-MainWindow::~MainWindow()
+void MainWindow::slot_back()
 {
-    delete ui;
-}
-
-void MainWindow::back()
-{
-    ui->stackedWidget->setCurrentIndex(0);
+    stackedWidget->setCurrentIndex(0);
     this->resize(width, height);
 }
 
 void MainWindow::on_sign_in_clicked()
 {
-    ui->stackedWidget->setCurrentIndex(1);
+    stackedWidget->setCurrentIndex(1);
     this->resize(0, 0);
 }
 
-void MainWindow::on_sing_up_clicked()
+void MainWindow::on_sign_up_clicked()
 {
-    ui->stackedWidget->setCurrentIndex(2);
+    stackedWidget->setCurrentIndex(2);
     this->resize(0, 0);
 }
 
@@ -54,4 +77,6 @@ void MainWindow::on_exit_clicked()
     QApplication::exit();
 }
 
-
+MainWindow::~MainWindow()
+{
+}

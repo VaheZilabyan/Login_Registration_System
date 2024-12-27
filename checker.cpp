@@ -3,31 +3,31 @@
 
 #include <QRegularExpression>
 
-QPair<bool, QString> Checker::fields_is_correct(Ui::Sign_up *ui)
+QPair<bool, QString> Checker::fields_is_correct(QVector<QLineEdit *> &&data)
 {
     QString error_message = "";
     size_t count = 0;
-    if (!name_is_correct(ui->name->text())) {
+    if (!name_is_correct(data[0]->text())) {
         ++count;
         error_message += "Uncorrect name input\n";
     }
-    if (!surname_is_correct(ui->surname->text())) {
+    if (!surname_is_correct(data[1]->text())) {
         ++count;
         error_message += "Uncorrect surname input\n";
     }
-    if (!phone_is_correct(ui->phone->text())) {
+    if (!phone_is_correct(data[2]->text())) {
         ++count;
         error_message += "Uncorrect phone input\n";
     }
-    if (!mail_is_correct(ui->mail->text())) {
+    if (!mail_is_correct(data[3]->text())) {
         ++count;
         error_message += "Uncorrect mail input\n";
     }
-    if (!login_is_correct(ui->create_login->text())) {
+    if (!login_is_correct(data[4]->text())) {
         ++count;
         error_message += "Uncorrect login input\n";
     }
-    if (!password_is_correct(ui->create_password->text())) {
+    if (!password_is_correct(data[5]->text())) {
         ++count;
         error_message += "Uncorrect password input\n";
     }

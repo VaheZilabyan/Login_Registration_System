@@ -11,7 +11,7 @@ class Checker
 {
 public:
     Checker() = default;
-    static QPair<bool, QString> fields_is_correct(Ui::Sign_up *);
+    static QPair<bool, QString> fields_is_correct(QVector<QLineEdit*>&& data);
 private:
     static bool name_is_correct(const QString&);
     static bool surname_is_correct(const QString&);
