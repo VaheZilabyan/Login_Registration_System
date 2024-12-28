@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     QWidget *mainWidget = new QWidget(this);
     QVBoxLayout *main_layout = new QVBoxLayout();
 
-    QLabel *myChatApp_label = new QLabel("WELCOME", mainWidget);
+    QLabel *myChatApp_label = new QLabel("MyChat", mainWidget);
     QFont font = myChatApp_label->font();
     font.setBold(true);
     font.setPointSize(26);

@@ -1,35 +1,29 @@
 #include "dbmanager.h"
+
 #include <QMessageBox>
+#include <QCryptographicHash>
 
-DBManager::DBManager()
-{
-    /*query = new QSqlQuery(db);
-    query->exec("CREATE TABLE User(Username TEXT, Password TEXT, Name TEXT, Surname TEXT, Mail TEXT, Phone TEXT)");
+DBManager::DBManager() {}
 
-    QString n = "username";
-    QString s = "password";
-    query->prepare("insert into User (Username, Password) values ('"+n+"','"+s+"')");
-    if (query->exec()) {
-        QMessageBox::critical(0, "Save", "Saved");
-    } else {
-        QMessageBox::critical(0, "Error", "Error");
-    }
-
-    while (query->next()) {
-        qDebug() << query->value(0).toString() << "+" << query->value(1).toString() << '\n';
-    }*/
+QString DBManager::hashPassword(const QString& password) {
+    return QString(QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256).toHex());
 }
 
-bool DBManager::open()
+bool DBManager::connectToDatabase()
 {
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("./data.db");
-    if (db.open()) {
-        qDebug() << "opened...\n";
-        return true;
+    if (!db.open()) {
+        qDebug() << "Failed to connect to database...";
+        return false;
     }
-    qDebug() << "does not opened\n";
-    return false;
+    qDebug() << "Connected to database!";
+    return true;
+}
+
+QSqlDatabase DBManager::getDatabase()
+{
+    return db;
 }
 
 void DBManager::close()

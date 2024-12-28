@@ -8,10 +8,12 @@ class DBManager
 {
 public:
     DBManager();
-    bool open();
+    bool connectToDatabase();
+    QSqlDatabase getDatabase();
     void close();
+    QString hashPassword(const QString& password);
+private:
     QSqlDatabase db;
-    QSqlQuery *query;
 };
 
 #endif // DBMANAGER_H

@@ -14,8 +14,9 @@ Sign_up::Sign_up(QWidget *parent) :
     surname = new QLineEdit(this);
     phone = new QLineEdit(this);
     mail = new QLineEdit(this);
-    login = new QLineEdit(this);
+    username = new QLineEdit(this);
     password = new QLineEdit(this);
+    password->setEchoMode(QLineEdit::Password);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
@@ -32,13 +33,13 @@ Sign_up::Sign_up(QWidget *parent) :
     QLabel *label_surname = new QLabel("Surname");
     QLabel *label_phone = new QLabel("Phone");
     QLabel *label_mail = new QLabel("Mail");
-    QLabel *label_login = new QLabel("Login");
+    QLabel *label_username = new QLabel("Username");
     QLabel *label_password = new QLabel("Password");
     label_name->setAlignment(Qt::AlignLeft);
     label_surname->setAlignment(Qt::AlignLeft);
     label_phone->setAlignment(Qt::AlignLeft);
     label_mail->setAlignment(Qt::AlignLeft);
-    label_login->setAlignment(Qt::AlignLeft);
+    label_username->setAlignment(Qt::AlignLeft);
     label_password->setAlignment(Qt::AlignLeft);
 
     grid_layout->addWidget(label_name, 0, 0);
@@ -49,8 +50,8 @@ Sign_up::Sign_up(QWidget *parent) :
     grid_layout->addWidget(phone, 2, 1);
     grid_layout->addWidget(label_mail, 3, 0);
     grid_layout->addWidget(mail, 3, 1);
-    grid_layout->addWidget(label_login, 4, 0);
-    grid_layout->addWidget(login, 4, 1);
+    grid_layout->addWidget(label_username, 4, 0);
+    grid_layout->addWidget(username, 4, 1);
     grid_layout->addWidget(label_password, 5, 0);
     grid_layout->addWidget(password, 5, 1);
 
@@ -87,7 +88,7 @@ void Sign_up::on_Create_clicked()
     data.push_back(surname);
     data.push_back(phone);
     data.push_back(mail);
-    data.push_back(login);
+    data.push_back(username);
     data.push_back(password);
 
     QPair<bool, QString> result = Checker::fields_is_correct(std::move(data));
@@ -95,17 +96,26 @@ void Sign_up::on_Create_clicked()
     QString errors = result.second;
 
     if (fields_is_correct){
-        if(dbm.open()) {
-            dbm.query = new QSqlQuery(dbm.db);
-            dbm.query->prepare("insert into User (Username, Password, Name, Surname, Mail, Phone) values ('"+login->text()+"','"+password->text()+"','"+name->text()+"','"+surname->text()+"','"+mail->text()+"','"+phone->text()+"')");
-            if (dbm.query->exec()) {
-                QMessageBox::information(this, "Account Created", "Now yo can log in " + name->text() + " " + surname->text());
+        if(dbm.connectToDatabase()) {
+            QSqlQuery *query = new QSqlQuery(dbm.getDatabase());
+            //create if not exist
+            query->exec("CREATE TABLE IF NOT EXISTS User(Username TEXT, Password TEXT, Name TEXT, Surname TEXT, Mail TEXT, Phone TEXT)");
+
+            query->prepare("insert into User (Username, Password, Name, Surname, Mail, Phone) values (?, ?, ?, ?, ?, ?)");
+            query->addBindValue(username->text());
+            query->addBindValue(dbm.hashPassword(password->text()));
+            query->addBindValue(name->text());
+            query->addBindValue(surname->text());
+            query->addBindValue(mail->text());
+            query->addBindValue(phone->text());
+            if (query->exec()) {
+                QMessageBox::information(this, "Account Created", "Now you can log in " + name->text() + " " + surname->text());
             } else {
                 QMessageBox::critical(this, tr("Error"), tr("Account not created!!!"));
             }
 
-            while (dbm.query->next()) {
-                qDebug() << dbm.query->value(0).toString() << "+" << dbm.query->value(1).toString() << '\n';
+            while (query->next()) {
+                qDebug() << query->value(0).toString() << "+" << query->value(1).toString() << '\n';
             }
             dbm.close();
         } else {
@@ -116,7 +126,7 @@ void Sign_up::on_Create_clicked()
         surname->clear();
         phone->clear();
         mail->clear();
-        login->clear();
+        username->clear();
         password->clear();
 
         //back to main menu

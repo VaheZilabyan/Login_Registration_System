@@ -2,6 +2,7 @@
 #include "ui_sign_in.h"
 
 #include <QMessageBox>
+#include <QSqlQuery>
 #include <QFile>
 
 Sign_in::Sign_in(QWidget *parent) :
@@ -23,6 +24,8 @@ Sign_in::Sign_in(QWidget *parent) :
     label_password->setAlignment(Qt::AlignRight);
     lineEdit_login = new QLineEdit(this);
     lineEdit_password = new QLineEdit(this);
+    lineEdit_password->setEchoMode(QLineEdit::Password);
+
     grid_layout->addWidget(label_username, 0, 0);
     grid_layout->addWidget(lineEdit_login, 0, 1);
     grid_layout->addWidget(label_password, 1, 0);
@@ -55,29 +58,25 @@ Sign_in::Sign_in(QWidget *parent) :
     connect(sign_up, &QPushButton::clicked, this, &Sign_in::on_sign_up_clicked);
 }
 
-Sign_in::~Sign_in()
-{
-}
-
 void Sign_in::on_login_clicked()
 {
-    if (dbm.open()) {
-        dbm.query = new QSqlQuery(dbm.db);
-        dbm.query->exec("CREATE TABLE User(Username TEXT, Password TEXT, Name TEXT, Surname TEXT, Mail TEXT, Phone TEXT)");
-
-        if(dbm.query->exec("select * from User where Username='"+lineEdit_login->text()+"' and Password='"+lineEdit_password->text()+"'")) {
+    if (dbm.connectToDatabase() && dbm.getDatabase().tables().size() > 0) {
+        QSqlQuery *query = new QSqlQuery(dbm.getDatabase());
+        if(query->exec("select * from User where Username='" + lineEdit_login->text()+ "' and Password='" + dbm.hashPassword(lineEdit_password->text()) + "'")) {
             // counti 1-i depqum e petq mutq gorcel
             int count = 0;
             QString name = "";
             QString surname = "";
-            while (dbm.query->next()) {
+            while (query->next()) {
                 ++count;
-                name = dbm.query->value(2).toString();
-                surname = dbm.query->value(3).toString();
+                name = query->value(2).toString();
+                surname = query->value(3).toString();
             }
             if (count == 1) {
                 qDebug() << "USER FINDED" << '\n';
                 QMessageBox::information(0, "You Log in", "You login successfully, " + name + " " + surname);
+                lineEdit_login->clear();
+                lineEdit_password->clear();
             } else {
                 QMessageBox::information(0, "Error", "Wrong login or password...");
             }
@@ -85,6 +84,7 @@ void Sign_in::on_login_clicked()
         dbm.close();
     } else {
         qDebug() << "error when open...\n";
+        QMessageBox::information(0, "Error", "Database is empty");
     }
 }
 
@@ -98,5 +98,9 @@ void Sign_in::on_back_from_sign_in_clicked()
 void Sign_in::on_sign_up_clicked()
 {
     emit signal_sign_up();
+}
+
+Sign_in::~Sign_in()
+{
 }
 

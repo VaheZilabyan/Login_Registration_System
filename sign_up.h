@@ -36,7 +36,7 @@ private: //gui
     QLineEdit *surname;
     QLineEdit *phone;
     QLineEdit *mail;
-    QLineEdit *login;
+    QLineEdit *username;
     QLineEdit *password;
 };
 
